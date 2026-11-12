@@ -19,7 +19,7 @@ From PortfolioProject..CovidDeaths
 Where location like '%Nigeria%'
 
 
---Looking at contries with the Highest Infection Rate compared to Population
+--Looking at countries with the Highest Infection Rate compared to Population
 
 Select Location, population, MAX(total_cases) as HighestInfectionCount, MAX(total_cases/population)*100 as PercentPopulationInfected
 From PortfolioProject..CovidDeaths
