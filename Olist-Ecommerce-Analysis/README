@@ -1,0 +1,58 @@
+Olist E-Commerce Analysis (SQL Server)
+
+An analysis of the Olist Brazilian e-commerce dataset in Microsoft SQL Server, answering 10 business questions on revenue, orders, customers, products, payments, sellers and delivery.
+
+Business questions
+
+1. What is the total revenue generated?
+2. How many orders were placed?
+3. Which months generated the highest revenue?
+4. Which product categories performed best?
+5. Which states generated the most sales?
+6. Who are the top 10 customers by spending?
+7. What payment methods are most popular?
+8. What is the average order value?
+9. How long does delivery take on average?
+10. Which sellers contribute most to sales?
+
+Data
+
+Source: Brazilian E-Commerce Public Dataset by Olist (Kaggle)
+Tables used: orders, order_items, order_payments, customers, products, sellers, and the category translation table (named category_name in my database)
+Tool: Microsoft SQL Server, queried in SQL Server Management Studio
+Setup: CSVs imported with the Import Flat File wizard. price, freight_value and payment_value were converted to DECIMAL(10,2) so money sums are exact.
+
+Method and rules
+
+Revenue rule: revenue counts every order except those with status canceled or unavailable, because money from orders that never reached the customer isn't earned revenue. Orders still in progress (created, approved, invoiced, processing, shipped) are kept.
+Revenue source: payment_value from order_payments for Q1, Q3, Q5, Q6, Q7 and Q8.
+Product and seller revenue (Q4, Q10): price from order_items, so freight is excluded. These totals are therefore lower than Q1.
+Customers (Q6): grouped by customer_unique_id, because customer_id changes with every order.
+Delivery time (Q9): delivered orders only, with a delivery date, measured from purchase to delivery to the customer in days.
+Joins: order_payments and order_items were never joined in the same query, because both have several rows per order and joining them would inflate the totals.
+
+Findings
+
+#	Question	Result
+1	Total revenue	15,739,137.01 BRL
+2	Orders placed	[all orders] total, [valid orders] after excluding canceled and unavailable
+3	Highest-revenue months	[top month and year], then [second], [third]
+4	Best product categories	[top category], [second], [third]
+5	Top states by sales	[top state], [second], [third]
+6	Top customer by spending	[amount] BRL (top 10 in the script)
+7	Most popular payment method	[method], used in [count] orders
+8	Average order value	[value] BRL
+9	Average delivery time	[value] days
+10	Top seller by sales	[amount] BRL (top 10 in the script)
+
+Caveats
+
+Partial years: the data starts in late 2016 and ends in 2018, so 2016 and the end of 2018 are partial. Monthly comparisons across years should account for this.
+Split payments (Q7): an order paid with more than one method is counted under each method, so the order counts add up to slightly more than the number of valid orders.
+Freight (Q4, Q10): these use item price only, so they don't reconcile exactly with Q1.
+Translation gaps (Q4): products with no category translation are left out of the category ranking.
+Delivery time (Q9): DATEDIFF(DAY, ...) counts calendar-day boundaries, so results are a close approximation of elapsed days.
+
+Files
+
+SQL_Ecommerce_Analysis: the full script (setup, then Q1 to Q10, each with its rule in a comment)
